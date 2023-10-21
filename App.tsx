@@ -21,6 +21,7 @@ const shellWidth = screenWidth * 0.25;
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [aadharVerifying, setAadharVerifying] = React.useState(false);
 
   const backgroundStyle = StyleSheet.create({
     container: {
@@ -33,11 +34,13 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle.container}>
+      <ScrollView overScrollMode='never'>
+      {aadharVerifying && (<Text>Verifying...</Text>)}
       <ReclaimAadhaar
-        // context="Proving on 2023 for eth India"
-        title="Aadhaar"
-        subTitle="Prove your Aadhaar"
-        cta="Prove"
+        title="Aadhaar UID"
+        subTitle="Prove you have Aadhaar Card"
+        cta="Get Verified"
+        context={"0x71C7656EC7ab88b098defB751B7401B5f6d8976F"}
         onSuccess={proofs => {
           /*do something*/
           console.log('proofs', proofs);
@@ -47,11 +50,39 @@ function App(): JSX.Element {
           console.log('Error', e);
         }}
         onStatusChange={(text: string) => {
-          console.log("from on Status change, the status is: ", text);
+          console.log("Reclaim - from on Status change, the status is: ", text);
+          if (text) {
+            setAadharVerifying(true);
+          }
         }}
+        showShell={false}
+        style={{width: 300, borderWidth: 0, height: 30}}
+        buttonStyle={{backgroundColor: '#01C38E', width: '100%', height: '100%', padding: 5}}
+        buttonTextStyle={{color: 'white', fontSize: 12}}
       />
+      <Image source={require('./img.png')} style={styles.image}/>
+      <Text style={styles.caption}>Image caption</Text>
+      <Image source={require('./img.png')} style={styles.image}/>
+      <Text style={styles.caption}>Image caption</Text>
+      </ScrollView>
     </SafeAreaView>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+  },
+  image: {
+    width: 400, // Set the width of the image as needed
+    height: 600, // Set the height of the image as needed
+    resizeMode: 'cover', // Adjust the resizeMode as needed
+    marginRight: 10, // Margin between the image and text
+  },
+  caption: {
+    fontSize: 16, // Adjust the font size as needed
+  },
+});
 
 export default App;
