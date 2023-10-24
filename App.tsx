@@ -34,13 +34,24 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle.container}>
-      <ScrollView overScrollMode='never'>
-      {aadharVerifying && (<Text>Verifying...</Text>)}
-      <ReclaimAadhaar
-        title="Aadhaar UID"
-        subTitle="Prove you have Aadhaar Card"
-        cta="Get Verified"
-        context={"0x71C7656EC7ab88b098defB751B7401B5f6d8976F"}
+      <ReclaimHttps
+        requestedProofs={[
+          {
+            url: 'https://bookface.ycombinator.com/home',
+            loginUrl: 'https://bookface.ycombinator.com/home',
+            loginCookies: ['_sso.key'], 
+            responseSelections: [
+              {
+                responseMatch:
+                  '\\{"id":{{YC_USER_ID}},.*?waas_admin.*?:{.*?}.*?:\\{.*?}.*?(?:full_name|first_name).*?}',
+              },
+            ],
+          },
+        ]}
+        context="Proving on 2023 for eth India" 
+        title="YC Login"
+        subTitle="Prove you have a YC Login"
+        cta="Prove"
         onSuccess={proofs => {
           /*do something*/
           console.log('proofs', proofs);
@@ -49,40 +60,19 @@ function App(): JSX.Element {
           /*do something*/
           console.log('Error', e);
         }}
+        buttonStyle={{backgroundColor: 'black'}}
+        buttonTextStyle={{color: 'blue'}}
         onStatusChange={(text: string) => {
-          console.log("Reclaim - from on Status change, the status is: ", text);
-          if (text) {
+          console.log("from on Status change, the status is: ", text);
+          if(text){
             setAadharVerifying(true);
           }
         }}
+        hideButton={aadharVerifying}
         showShell={false}
-        style={{width: 300, borderWidth: 0, height: 30}}
-        buttonStyle={{backgroundColor: '#01C38E', width: '100%', height: '100%', padding: 5}}
-        buttonTextStyle={{color: 'white', fontSize: 12}}
       />
-      <Image source={require('./img.png')} style={styles.image}/>
-      <Text style={styles.caption}>Image caption</Text>
-      <Image source={require('./img.png')} style={styles.image}/>
-      <Text style={styles.caption}>Image caption</Text>
-      </ScrollView>
     </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-  },
-  image: {
-    width: 400, // Set the width of the image as needed
-    height: 600, // Set the height of the image as needed
-    resizeMode: 'cover', // Adjust the resizeMode as needed
-    marginRight: 10, // Margin between the image and text
-  },
-  caption: {
-    fontSize: 16, // Adjust the font size as needed
-  },
-});
 
 export default App;
